@@ -1,0 +1,6 @@
+# Claude Code session data — never commit
+.claude/
+
+# OS
+.DS_Store
+Thumbs.db

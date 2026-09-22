@@ -1,0 +1,102 @@
+name: reference-auto-refresh
+
+# Runs every Monday at 13:00 PHT (05:00 UTC) — weekly cadence matches the
+# 7-day verification horizon.
+#
+# On schedule / workflow_dispatch:
+#   1. detect stale files
+#   2. run refresh.sh → Claude re-verifies each stale file → patch in updates/
+#   3. apply_patches.py merges all verdicts automatically
+#      (NEEDS_HUMAN files get last_verified bumped; structural diff is kept in updates/)
+#   4. commit updated references/ back to main
+#
+# On pull_request (references/** changed):
+#   gate only — block merge if any file is stale or malformed.
+
+on:
+  schedule:
+    - cron: "0 5 * * 1"   # Monday 13:00 PHT (05:00 UTC)
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "references/**"
+      - "SKILL.md"
+
+permissions:
+  contents: write
+
+jobs:
+  gate:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run staleness gate
+        run: python3 scripts/check_refs.py
+
+  auto-refresh:
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Check for stale files
+        id: gate
+        run: |
+          set +e
+          python3 scripts/check_refs.py --json > gate.json
+          GATE_EXIT=$?
+          set -e
+          STALE=$(python3 -c "
+          import json, sys
+          d = json.load(open('gate.json'))
+          print(len(d['stale_files']))
+          ")
+          echo "stale_count=$STALE" >> "$GITHUB_OUTPUT"
+          echo "gate_exit=$GATE_EXIT"   >> "$GITHUB_OUTPUT"
+          echo "stale files: $STALE"
+
+      - name: Check credentials
+        if: steps.gate.outputs.stale_count != '0'
+        id: creds
+        run: |
+          if [ -z "$TOKEN" ]; then
+            echo "CLAUDE_CODE_OAUTH_TOKEN secret is not set — skipping refresh." >&2
+            echo "configured=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "configured=true" >> "$GITHUB_OUTPUT"
+          fi
+        env:
+          TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+
+      - name: Install Claude Code
+        if: steps.gate.outputs.stale_count != '0' && steps.creds.outputs.configured == 'true'
+        run: npm install -g @anthropic-ai/claude-code
+
+      - name: Refresh stale files
+        if: steps.gate.outputs.stale_count != '0' && steps.creds.outputs.configured == 'true'
+        run: ./scripts/refresh.sh
+        env:
+          CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+
+      - name: Apply patches
+        if: steps.gate.outputs.stale_count != '0' && steps.creds.outputs.configured == 'true'
+        run: python3 scripts/apply_patches.py
+
+      - name: Commit updated references
+        if: steps.gate.outputs.stale_count != '0' && steps.creds.outputs.configured == 'true'
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add references/ updates/
+          if git diff --cached --quiet; then
+            echo "nothing to commit"
+          else
+            TODAY=$(date -u +%F)
+            git commit -m "chore: auto-refresh reference files ${TODAY}"
+            git push
+          fi
+

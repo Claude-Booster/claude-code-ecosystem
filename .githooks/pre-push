@@ -1,0 +1,65 @@
+#!/usr/bin/env bash
+# .githooks/pre-push
+# Belt-and-suspenders: blocks annotated tags whose tagger line or message body
+# contains a restricted identifier. Lightweight tags are skipped (no tagger).
+# Also runs for any commits being pushed that have a blocked author/committer.
+# Activate: git config core.hooksPath .githooks
+#
+# stdin format: <local_ref> <local_sha> <remote_ref> <remote_sha>
+
+set -euo pipefail
+
+# ── Blocked patterns (encoded; categories: BLOCKED_NAME_1, BLOCKED_NAME_2) ─
+_E1="RnJlZCBNYW5kYXB8RnJlZGVyaWNrIE1hbmRhcA=="
+# ── (categories: BLOCKED_EMAIL, BLOCKED_ORG_DOMAIN, BLOCKED_ORG, BLOCKED_HANDLE)
+_E2="ZnJlZGVyaWNrXC5tYW5kYXB8YWNjZW50dXJlXC5jb218QWNjZW50dXJlfHRodWdfa2NpcmVkZXJm"
+
+_dec() { printf '%s' "$1" | base64 -d 2>/dev/null || printf '%s' "$1" | base64 -D 2>/dev/null || true; }
+P1=$(_dec "$_E1"); P2=$(_dec "$_E2")
+_C="${P1}|${P2}"
+[[ -n "$P1" && -n "$P2" ]] || exit 0
+
+FAIL=0
+
+while read -r local_ref local_sha remote_ref _remote_sha; do
+  # Skip deletions
+  [[ "$local_sha" == "0000000000000000000000000000000000000000" ]] && continue
+
+  # ── Annotated tags ────────────────────────────────────────────────────────
+  if [[ "$remote_ref" == refs/tags/* ]]; then
+    obj_type=$(git cat-file -t "$local_sha" 2>/dev/null || true)
+    if [[ "$obj_type" == "tag" ]]; then
+      tag_name="${remote_ref#refs/tags/}"
+      tag_content=$(git cat-file tag "$local_sha" 2>/dev/null || true)
+      if printf '%s' "$tag_content" | grep -qiE "$_C"; then
+        printf '[pre-push] BLOCKED: annotated tag %q contains a restricted identifier.\n' "$tag_name" >&2
+        printf '  Delete and recreate:  git tag -d %q\n' "$tag_name" >&2
+        printf '  Then set identity:    git config user.email "<handle>@users.noreply.github.com"\n' >&2
+        FAIL=1
+      fi
+    fi
+    continue
+  fi
+
+  # ── Commits on branch refs ────────────────────────────────────────────────
+  if [[ "$remote_ref" == refs/heads/* ]]; then
+    remote_sha="${_remote_sha:-}"
+    if [[ "$remote_sha" == "0000000000000000000000000000000000000000" || -z "$remote_sha" ]]; then
+      range="$local_sha"
+    else
+      range="${remote_sha}..${local_sha}"
+    fi
+
+    while IFS=' ' read -r _sha _author_name _author_email _committer_name _committer_email; do
+      for _val in "$_author_name" "$_author_email" "$_committer_name" "$_committer_email"; do
+        if printf '%s' "$_val" | grep -qiE "$_C"; then
+          printf '[pre-push] BLOCKED (commit %s): restricted identifier in author/committer.\n' "$_sha" >&2
+          FAIL=1
+          break
+        fi
+      done
+    done < <(git log --format="%H %an %ae %cn %ce" "$range" 2>/dev/null || true)
+  fi
+done
+
+[[ $FAIL -eq 0 ]] || exit 1

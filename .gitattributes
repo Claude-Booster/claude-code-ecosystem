@@ -1,0 +1,11 @@
+# Force LF for shell scripts and hooks — required for cross-platform execution
+*.sh        text eol=lf
+.githooks/* text eol=lf
+
+# Text files — normalize to LF
+*.md        text eol=lf
+*.yml       text eol=lf
+*.yaml      text eol=lf
+*.json      text eol=lf
+*.py        text eol=lf
+*.txt       text eol=lf

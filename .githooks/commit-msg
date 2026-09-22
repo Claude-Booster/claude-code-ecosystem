@@ -1,0 +1,61 @@
+#!/usr/bin/env bash
+# .githooks/commit-msg
+# Blocks commit messages that contain restricted identifiers.
+# Also re-checks committer identity as belt-and-suspenders.
+# Fires for: git commit, --amend, cherry-pick, merge, rebase squash/fixup.
+# $1 = path to the file containing the commit message.
+
+set -euo pipefail
+
+MSG_FILE="${1:?commit-msg: missing message-file argument}"
+
+# ── Blocked patterns (encoded; categories: BLOCKED_NAME_1, BLOCKED_NAME_2) ─
+_E1="RnJlZCBNYW5kYXB8RnJlZGVyaWNrIE1hbmRhcA=="
+# ── (categories: BLOCKED_EMAIL, BLOCKED_ORG_DOMAIN, BLOCKED_ORG, BLOCKED_HANDLE)
+_E2="ZnJlZGVyaWNrXC5tYW5kYXB8YWNjZW50dXJlXC5jb218QWNjZW50dXJlfHRodWdfa2NpcmVkZXJm"
+
+_dec() { printf '%s' "$1" | base64 -d 2>/dev/null || printf '%s' "$1" | base64 -D 2>/dev/null || true; }
+P1=$(_dec "$_E1"); P2=$(_dec "$_E2")
+_C="${P1}|${P2}"
+[[ -n "$P1" && -n "$P2" ]] || exit 0
+
+# ── Guard 1: commit message content ────────────────────────────────────────
+if grep -qiE "$_C" "$MSG_FILE"; then
+  printf '[commit-msg] BLOCKED: commit message contains a restricted identifier.\n' >&2
+  printf '  Edit the message and retry:  git commit --edit\n' >&2
+  exit 1
+fi
+
+# ── Guard 2: committer identity (belt-and-suspenders) ──────────────────────
+FAIL=0
+
+_blk() {
+  local lbl="$1" val="$2"
+  [[ -z "$val" ]] && return 0
+  if printf '%s' "$val" | grep -qiE "$_C"; then
+    printf '[commit-msg] BLOCKED (%s): restricted identifier detected.\n' "$lbl" >&2
+    FAIL=1
+  fi
+}
+
+_GIT_NAME="$(git config user.name  2>/dev/null || true)"
+_GIT_EMAIL="$(git config user.email 2>/dev/null || true)"
+_blk "user.name"          "$_GIT_NAME"
+_blk "user.email"         "$_GIT_EMAIL"
+_blk "GIT_AUTHOR_NAME"    "${GIT_AUTHOR_NAME:-}"
+_blk "GIT_AUTHOR_EMAIL"   "${GIT_AUTHOR_EMAIL:-}"
+_blk "GIT_COMMITTER_NAME" "${GIT_COMMITTER_NAME:-}"
+_blk "GIT_COMMITTER_EMAIL" "${GIT_COMMITTER_EMAIL:-}"
+
+if [[ -z "$_GIT_NAME" || -z "$_GIT_EMAIL" ]]; then
+  _blk "OS username" "${USERNAME:-$(whoami 2>/dev/null || true)}"
+  _blk "OS domain"   "${USERDOMAIN:-}"
+  _blk "OS host"     "${COMPUTERNAME:-$(hostname 2>/dev/null || true)}"
+fi
+
+if [[ $FAIL -ne 0 ]]; then
+  printf '\nCommit blocked. Fix committer identity and retry.\n' >&2
+  printf '  git config user.name  "Developer"\n' >&2
+  printf '  git config user.email "<handle>@users.noreply.github.com"\n' >&2
+  exit 1
+fi
