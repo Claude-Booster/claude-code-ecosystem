@@ -1,5 +1,8 @@
 # Claude Code session data — never commit
-.claude/
+.claude/projects/
+.claude/todos/
+.claude/settings.local.json
+.claude/*.jsonl
 
 # OS
 .DS_Store
