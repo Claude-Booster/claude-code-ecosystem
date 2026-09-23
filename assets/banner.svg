@@ -1,0 +1,124 @@
+<svg width="900" height="210" viewBox="0 0 900 210" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Horizontal scanline texture -->
+    <pattern id="sl" x="0" y="0" width="1" height="3" patternUnits="userSpaceOnUse">
+      <rect width="1" height="1" fill="#ffffff" fill-opacity="0.028"/>
+    </pattern>
+    <!-- Glow filter for scan cursor -->
+    <filter id="glow" x="-40%" y="-20%" width="180%" height="140%">
+      <feGaussianBlur stdDeviation="3.5" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="900" height="210" fill="#0D1117"/>
+  <rect width="900" height="210" fill="url(#sl)"/>
+
+  <!-- Top rule -->
+  <rect x="30" y="20" width="840" height="1" fill="#21262D"/>
+
+  <!-- Title -->
+  <text x="450" y="62"
+    font-family="'Courier New',Consolas,'Lucida Console',monospace"
+    font-size="30" font-weight="700"
+    fill="#E6EDF3" text-anchor="middle">claude-code-ecosystem</text>
+
+  <!-- Tagline -->
+  <text x="450" y="88"
+    font-family="'Courier New',Consolas,'Lucida Console',monospace"
+    font-size="10" fill="#6E7681" text-anchor="middle" letter-spacing="0.12em">
+    FIELD REFERENCE · SNAPSHOT 2026-09-19 · VERIFIED WEEKLY
+  </text>
+
+  <!-- Reference spectrum strip container -->
+  <rect x="30" y="108" width="840" height="64" rx="3"
+    fill="#161B22" stroke="#21262D" stroke-width="1"/>
+
+  <!-- Band 0: core-surfaces (blue) -->
+  <rect x="31"  y="109" width="104" height="62" fill="#0D1F2E"/>
+  <rect x="31"  y="109" width="104" height="2"  fill="#388BFD"/>
+  <!-- Band 1: mcp-servers (blue) -->
+  <rect x="136" y="109" width="104" height="62" fill="#0D1F2E"/>
+  <rect x="136" y="109" width="104" height="2"  fill="#388BFD"/>
+  <!-- Band 2: skills-and-plugins (green) -->
+  <rect x="241" y="109" width="104" height="62" fill="#0D1D15"/>
+  <rect x="241" y="109" width="104" height="2"  fill="#3FB950"/>
+  <!-- Band 3: orchestration (green) -->
+  <rect x="346" y="109" width="104" height="62" fill="#0D1D15"/>
+  <rect x="346" y="109" width="104" height="2"  fill="#3FB950"/>
+  <!-- Band 4: context-and-cost (amber) -->
+  <rect x="451" y="109" width="104" height="62" fill="#1C1B0D"/>
+  <rect x="451" y="109" width="104" height="2"  fill="#E3B341"/>
+  <!-- Band 5: gates-and-observability (amber) -->
+  <rect x="556" y="109" width="104" height="62" fill="#1C1B0D"/>
+  <rect x="556" y="109" width="104" height="2"  fill="#E3B341"/>
+  <!-- Band 6: landscape (gray) -->
+  <rect x="661" y="109" width="104" height="62" fill="#141618"/>
+  <rect x="661" y="109" width="104" height="2"  fill="#6E7681"/>
+  <!-- Band 7: evidence-ledger (gray) -->
+  <rect x="766" y="109" width="104" height="62" fill="#141618"/>
+  <rect x="766" y="109" width="104" height="2"  fill="#6E7681"/>
+
+  <!-- Band name labels (centered in each 104px band) -->
+  <text x="83"  y="136" font-family="'Courier New',monospace" font-size="8.5" fill="#58A6FF" text-anchor="middle">core-surfaces</text>
+  <text x="188" y="136" font-family="'Courier New',monospace" font-size="8.5" fill="#58A6FF" text-anchor="middle">mcp-servers</text>
+  <text x="293" y="136" font-family="'Courier New',monospace" font-size="8.5" fill="#4AC26B" text-anchor="middle">skills-and-plugins</text>
+  <text x="398" y="136" font-family="'Courier New',monospace" font-size="8.5" fill="#4AC26B" text-anchor="middle">orchestration</text>
+  <text x="503" y="136" font-family="'Courier New',monospace" font-size="8.5" fill="#D4A72C" text-anchor="middle">context-and-cost</text>
+  <text x="608" y="136" font-family="'Courier New',monospace" font-size="8.5" fill="#D4A72C" text-anchor="middle">gates-and-obs.</text>
+  <text x="713" y="136" font-family="'Courier New',monospace" font-size="8.5" fill="#8B949E" text-anchor="middle">landscape</text>
+  <text x="818" y="136" font-family="'Courier New',monospace" font-size="8.5" fill="#8B949E" text-anchor="middle">evidence-ledger</text>
+
+  <!-- Category sublabels -->
+  <text x="83"  y="158" font-family="'Courier New',monospace" font-size="7" fill="#388BFD" text-anchor="middle" opacity="0.42">INFRASTRUCTURE</text>
+  <text x="188" y="158" font-family="'Courier New',monospace" font-size="7" fill="#388BFD" text-anchor="middle" opacity="0.42">INFRASTRUCTURE</text>
+  <text x="293" y="158" font-family="'Courier New',monospace" font-size="7" fill="#3FB950" text-anchor="middle" opacity="0.42">TOOLS</text>
+  <text x="398" y="158" font-family="'Courier New',monospace" font-size="7" fill="#3FB950" text-anchor="middle" opacity="0.42">TOOLS</text>
+  <text x="503" y="158" font-family="'Courier New',monospace" font-size="7" fill="#E3B341" text-anchor="middle" opacity="0.42">QUALITY</text>
+  <text x="608" y="158" font-family="'Courier New',monospace" font-size="7" fill="#E3B341" text-anchor="middle" opacity="0.42">QUALITY</text>
+  <text x="713" y="158" font-family="'Courier New',monospace" font-size="7" fill="#6E7681" text-anchor="middle" opacity="0.42">META</text>
+  <text x="818" y="158" font-family="'Courier New',monospace" font-size="7" fill="#6E7681" text-anchor="middle" opacity="0.42">META</text>
+
+  <!--
+    Animated scan cursor.
+    Phase 0–5%:   fade in at x=31        (appears at left edge)
+    Phase 5–55%:  sweep right, fully lit  (x=31 → 640, opacity stays 0.9)
+    Phase 55–65%: continue sweep + fade   (x=640 → 867, opacity 0.9 → 0)
+    Phase 65–65.1%: snap back invisible   (x=31, opacity=0)
+    Phase 65.1–100%: hold invisible        (x=31, opacity=0)
+  -->
+  <rect opacity="0" y="109" width="3" height="62" fill="#58A6FF" filter="url(#glow)">
+    <animate attributeName="x"
+      values="31;31;867;31;31"
+      keyTimes="0;0.05;0.65;0.651;1"
+      calcMode="linear" dur="5s" repeatCount="indefinite"/>
+    <animate attributeName="opacity"
+      values="0;0.92;0.92;0;0;0"
+      keyTimes="0;0.05;0.55;0.65;0.651;1"
+      dur="5s" repeatCount="indefinite"/>
+  </rect>
+
+  <!-- Bottom rule -->
+  <rect x="30" y="182" width="840" height="1" fill="#21262D"/>
+
+  <!-- Footer: pulsing live indicator -->
+  <circle cx="40" cy="196" r="3.5" fill="#3FB950">
+    <animate attributeName="opacity" values="1;0.2;1" dur="1.8s" repeatCount="indefinite"/>
+  </circle>
+  <text x="50" y="200"
+    font-family="'Courier New',monospace" font-size="9" fill="#4AC26B">LIVE</text>
+
+  <!-- Footer: repo path -->
+  <text x="450" y="200"
+    font-family="'Courier New',monospace" font-size="9"
+    fill="#6E7681" text-anchor="middle">Claude-Booster / claude-code-ecosystem</text>
+
+  <!-- Footer: license -->
+  <text x="870" y="200"
+    font-family="'Courier New',monospace" font-size="9"
+    fill="#6E7681" text-anchor="end">MIT</text>
+</svg>
