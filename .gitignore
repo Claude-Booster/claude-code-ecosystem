@@ -7,3 +7,6 @@
 # OS
 .DS_Store
 Thumbs.db
+
+# Restricted-identifier patterns (local only — never commit)
+.githooks/.blocked
