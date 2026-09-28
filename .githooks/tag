@@ -1,67 +1,54 @@
-#!/usr/bin/env bash
-# .githooks/tag
-# Blocks annotated tag creation when the tag name or tagger identity
-# contains a restricted identifier. Lightweight tags have no tagger —
-# only the tag name is checked for those.
-# Requires git >= 2.24.0 (when this hook type was introduced).
-# Activate: git config core.hooksPath .githooks
+#!/bin/sh
+# Opt-in creation-time guard for annotated tags. git has NO native pre-tag hook,
+# so this cannot fire automatically on `git tag -a`. Use it via the alias:
+#   git config alias.safetag '!sh .githooks/tag'
+#   git safetag <tagname>        # checks name + tagger identity, then you tag
+# pre-push is the guaranteed automatic gate; this is early feedback only.
 #
-# Arguments provided by git:
-#   $1 = tag name
-#   $2 = tag type  ("commit" = lightweight, "tag" = annotated)
-#   $3 = SHA of the object being tagged
+# Real patterns live in .githooks/.blocked (gitignored); absent => skip.
+# $1 = tag name (optional)
 
-set -euo pipefail
+BLOCKED_FILE="$(git rev-parse --show-toplevel 2>/dev/null)/.githooks/.blocked"
+
+# BLOCKED_NAME_1 BLOCKED_NAME_2 BLOCKED_EMAIL BLOCKED_ORG BLOCKED_ORG_DOMAIN
+
+[ -f "$BLOCKED_FILE" ] || exit 0
+
+FORBIDDEN=""
+while IFS= read -r line; do
+    line=$(printf '%s' "$line" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
+    case "$line" in
+        ''|\#*) continue ;;
+    esac
+    if [ -z "$FORBIDDEN" ]; then
+        FORBIDDEN="$line"
+    else
+        FORBIDDEN="$FORBIDDEN|$line"
+    fi
+done < "$BLOCKED_FILE"
+
+[ -z "$FORBIDDEN" ] && exit 0
+
+printf '' | grep -qE "$FORBIDDEN" 2>/dev/null
+if [ "$?" -ge 2 ]; then
+    echo "[tag] WARNING: .githooks/.blocked has an invalid pattern — check skipped." >&2
+    exit 0
+fi
 
 TAG_NAME="${1:-}"
-TAG_TYPE="${2:-}"
-
-# ── Blocked patterns (encoded; categories: BLOCKED_NAME_1, BLOCKED_NAME_2) ─
-_E1="RnJlZCBNYW5kYXB8RnJlZGVyaWNrIE1hbmRhcA=="
-# ── (categories: BLOCKED_EMAIL, BLOCKED_ORG_DOMAIN, BLOCKED_ORG, BLOCKED_HANDLE)
-_E2="ZnJlZGVyaWNrXC5tYW5kYXB8YWNjZW50dXJlXC5jb218QWNjZW50dXJlfHRodWdfa2NpcmVkZXJm"
-
-_dec() { printf '%s' "$1" | base64 -d 2>/dev/null || printf '%s' "$1" | base64 -D 2>/dev/null || true; }
-P1=$(_dec "$_E1"); P2=$(_dec "$_E2")
-_C="${P1}|${P2}"
-[[ -n "$P1" && -n "$P2" ]] || exit 0
-
-FAIL=0
-
-_blk() {
-  local lbl="$1" val="$2"
-  [[ -z "$val" ]] && return 0
-  if printf '%s' "$val" | grep -qiE "$_C"; then
-    printf '[tag] BLOCKED (%s): restricted identifier detected.\n' "$lbl" >&2
-    FAIL=1
-  fi
-}
-
-# ── Guard 1: tag name (lightweight and annotated) ──────────────────────────
-_blk "tag name" "$TAG_NAME"
-
-# ── Guard 2: tagger identity — annotated tags only ─────────────────────────
-if [[ "$TAG_TYPE" == "tag" ]]; then
-  _CFG_NAME="$(git config user.name  2>/dev/null || true)"
-  _CFG_EMAIL="$(git config user.email 2>/dev/null || true)"
-
-  # git uses GIT_COMMITTER_* for the tagger field; GIT_AUTHOR_* is fallback
-  _TAGGER_NAME="${GIT_COMMITTER_NAME:-${GIT_AUTHOR_NAME:-$_CFG_NAME}}"
-  _TAGGER_EMAIL="${GIT_COMMITTER_EMAIL:-${GIT_AUTHOR_EMAIL:-$_CFG_EMAIL}}"
-
-  _blk "tagger name"  "$_TAGGER_NAME"
-  _blk "tagger email" "$_TAGGER_EMAIL"
-
-  if [[ -z "$_CFG_NAME" || -z "$_CFG_EMAIL" ]]; then
-    _blk "OS username" "${USERNAME:-$(whoami 2>/dev/null || true)}"
-    _blk "OS domain"   "${USERDOMAIN:-}"
-    _blk "OS host"     "${COMPUTERNAME:-$(hostname 2>/dev/null || true)}"
-  fi
+if [ -n "$TAG_NAME" ] && printf '%s' "$TAG_NAME" | grep -iqE "$FORBIDDEN"; then
+    echo "[tag] BLOCKED: tag name contains a restricted identifier." >&2
+    exit 1
 fi
 
-if [[ $FAIL -ne 0 ]]; then
-  printf '\nTag blocked. Fix committer identity and retry.\n' >&2
-  printf '  git config user.name  "Developer"\n' >&2
-  printf '  git config user.email "<handle>@users.noreply.github.com"\n' >&2
-  exit 1
+CFG_NAME="$(git config user.name 2>/dev/null || true)"
+CFG_EMAIL="$(git config user.email 2>/dev/null || true)"
+TAGGER_NAME="${GIT_COMMITTER_NAME:-${GIT_AUTHOR_NAME:-$CFG_NAME}}"
+TAGGER_EMAIL="${GIT_COMMITTER_EMAIL:-${GIT_AUTHOR_EMAIL:-$CFG_EMAIL}}"
+
+if printf '%s' "$TAGGER_NAME $TAGGER_EMAIL" | grep -iqE "$FORBIDDEN"; then
+    echo "[tag] BLOCKED: tagger identity contains a restricted identifier." >&2
+    echo "  Fix: git config user.name 'Developer' && git config user.email 'you@users.noreply.github.com'" >&2
+    exit 1
 fi
+exit 0
