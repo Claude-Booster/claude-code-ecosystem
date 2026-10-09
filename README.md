@@ -60,15 +60,40 @@ Read one file. Read a second only if the first genuinely doesn't answer the ques
 
 ## Staying current
 
+Each reference file is re-verified on a 7-day horizon. Two ways to run it:
+
+**Locally (manual):**
+
 ```bash
-# Check which reference files are past their verify window (offline, no API cost)
+# Which reference files are past their verify window (offline, no API cost)
 python3 scripts/check_refs.py
 
-# Run a headless refresh (writes patches to updates/YYYY-MM-DD/)
+# Headless Claude re-verifies the stale files → patches in updates/YYYY-MM-DD/
 ./scripts/refresh.sh
 ```
 
-`refresh.sh` never edits `references/` directly — it emits review patches. A human merges what they accept and bumps `last_verified` in the file's front matter. Forgetting that bump is the failure mode that silently stops the loop. The GitHub Actions workflow runs this on a Monday schedule.
+`refresh.sh` never edits `references/` — it only emits review patches. Apply what you accept and **bump `last_verified`** in the file's front matter (forgetting that bump silently stops the loop), or run `python3 scripts/apply_patches.py` to apply them automatically.
+
+**On CI (automatic):** the [`reference-auto-refresh`](.github/workflows/reference-staleness.yml) workflow runs every Monday (05:00 UTC). It detects stale files, runs `refresh.sh`, applies the patches, and lands the result as an **auto-merge PR** that merges once the `verify` check passes.
+
+### Self-hosting the refresh loop (forks)
+
+The CI loop needs secrets and repo settings that cloning does **not** create. Without them the Monday run silently does nothing.
+
+**Secrets** — repo → Settings → Secrets and variables → Actions:
+
+| Secret | Purpose |
+|---|---|
+| `CLAUDE_CODE_OAUTH_TOKEN` | Auth for the headless Claude that re-verifies the files |
+| `REFRESH_APP_ID` / `REFRESH_APP_PRIVATE_KEY` | A **GitHub App** (repo permissions **Contents: Read & write** + **Pull requests: Read & write**, *installed on the repo*). The job opens the PR with the App token on purpose — a `GITHUB_TOKEN`-authored PR does **not** trigger the `verify` check, so auto-merge would hang forever |
+| `BLOCKED_PATTERNS` | Only if you also run the `verify` commit-guard workflow — the restricted-identifier regex it scans for |
+
+**Repo settings:**
+
+- **Allow auto-merge: ON** and **squash merging allowed** (Settings → General → Pull Requests) — the job uses `gh pr merge --squash --auto`.
+- **Branch protection** on the default branch **requiring the `verify` status check**, so auto-merge waits for it. The App-authored PR satisfies the check legitimately, so no bypass is needed even with `enforce_admins`.
+
+**Gotcha — registration:** a workflow's schedule only fires once GitHub Actions has *registered* it. A workflow that arrives via a bulk history push and has no `push:` trigger may never register. If `gh workflow list` doesn't show `reference-auto-refresh`, push a trivial edit to the workflow file on the default branch to force registration.
 
 ## Security note
 
