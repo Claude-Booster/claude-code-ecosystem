@@ -3,8 +3,8 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/snapshot-2026--09--19-388BFD?style=flat-square&labelColor=0D1117" alt="snapshot 2026-09-19"/>
-  <img src="https://img.shields.io/badge/verified-2026--09--22-3FB950?style=flat-square&labelColor=0D1117" alt="last verified 2026-09-22"/>
+  <img src="https://img.shields.io/badge/snapshot-2026--10--09-388BFD?style=flat-square&labelColor=0D1117" alt="snapshot 2026-10-09"/>
+  <img src="https://img.shields.io/badge/verified-2026--10--09-3FB950?style=flat-square&labelColor=0D1117" alt="last verified 2026-10-09"/>
   <img src="https://img.shields.io/badge/horizon-7_days-E3B341?style=flat-square&labelColor=0D1117" alt="verify every 7 days"/>
   <img src="https://img.shields.io/badge/license-MIT-6E7681?style=flat-square&labelColor=0D1117" alt="MIT"/>
 </p>

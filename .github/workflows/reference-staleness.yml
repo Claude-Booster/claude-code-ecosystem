@@ -121,6 +121,10 @@ jobs:
         if: steps.gate.outputs.stale_count != '0' && steps.creds.outputs.configured == 'true' && steps.appcreds.outputs.configured == 'true'
         run: python3 scripts/apply_patches.py
 
+      - name: Bump README badges
+        if: steps.gate.outputs.stale_count != '0' && steps.creds.outputs.configured == 'true' && steps.appcreds.outputs.configured == 'true'
+        run: python3 scripts/update_badges.py
+
       - name: Open auto-merge PR
         if: steps.gate.outputs.stale_count != '0' && steps.creds.outputs.configured == 'true' && steps.appcreds.outputs.configured == 'true'
         env:
@@ -130,8 +134,9 @@ jobs:
           git config user.email "refresh-bot@users.noreply.github.com"
           # Stage first, then check the INDEX — refresh.sh writes brand-new
           # untracked files under updates/<date>/ that a tracked-only
-          # `git diff` would miss, silently dropping the patches.
-          git add references/ updates/
+          # `git diff` would miss, silently dropping the patches. README.md
+          # carries the badge dates bumped by update_badges.py.
+          git add references/ updates/ README.md
           if git diff --cached --quiet; then
             echo "nothing changed after refresh — no PR needed"
             exit 0
