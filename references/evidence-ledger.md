@@ -1,5 +1,5 @@
 ---
-last_verified: 2026-09-22
+last_verified: 2026-10-09
 volatility: high
 verify_horizon_days: 7
 primary_sources:
