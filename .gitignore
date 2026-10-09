@@ -4,6 +4,10 @@
 .claude/settings.local.json
 .claude/*.jsonl
 
+# Python bytecode (scripts/ ships runnable Python)
+__pycache__/
+*.pyc
+
 # OS
 .DS_Store
 Thumbs.db
