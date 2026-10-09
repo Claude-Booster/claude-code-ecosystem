@@ -1,5 +1,5 @@
 ---
-last_verified: 2026-09-22
+last_verified: 2026-10-09
 volatility: medium
 verify_horizon_days: 7
 primary_sources:
@@ -37,14 +37,14 @@ The biggest genuine methodology shift of 2026. All of these converge on specify 
 | **BMAD-METHOD** | role agents — PO, architect, SM, dev, QA | ~44k | Heavy. Suits users who want simulated team process. |
 | **Task Master AI** | PRD → dependency-aware task graph | growth stalled, `[REPORTED]` ~+18% | Cursor-centric. MIT + Commons Clause — check licensing for commercial use. |
 | **GSD** | deep execution orchestration | | |
-| **Agent OS** | | stagnant | `[REPORTED]` publicly downsized. Do not recommend as current. |
+Agent OS shipped **v3** (repositioned Jan 2026): Builder Methods deliberately stripped ~70% of the framework and now defers spec-writing to Plan Mode, keeping a thin standards-injection layer (`/shape-spec`, profiles, mission/roadmap/tech-stack files). It is **actively maintained**, not stagnant or defunct. The "publicly downsized" observation is correct, but "Do not recommend as current" is wrong — it is current, just leaner. (The repositioning predates the 2026-09-22 snapshot, so this is a standing mischaracterization rather than fresh drift, but it is a live-tool-painted-as-dead error and worth correcting.) This also softens the related claim in "The prior question" that lists Agent OS as a casualty of frontier models absorbing scaffolding — the direction is right, the "downsized out of relevance" implication is not.
 | **SuperClaude** | | | |
 
 **Default recommendation:** plan mode first; OpenSpec when features regularly cross many files; Spec Kit when the organization needs the audit trail.
 
 ## Swarm orchestrators
 
-**Ruflo** — formerly **Claude Flow**, by Reuven Cohen (rUv). `[VERIFIED]` Renamed January 2026 to avoid Anthropic trademark conflict. SPARC methodology, hive-mind topology, rewritten toward Rust/WASM. ~73k stars `[REPORTED]` — essentially unchanged; note that several aggregator blogs report ~31k, which is stale. GitHub is authoritative here..
+**Ruflo** — formerly **Claude Flow**, by Reuven Cohen (rUv). `[VERIFIED]` Renamed January 2026 to avoid Anthropic trademark conflict. SPARC methodology, hive-mind topology, rewritten toward Rust/WASM. ~74k stars `[REPORTED]` (GitHub live count 74.2k). "Essentially unchanged" still holds; the ~31k aggregator figure remains stale. Only the headline number needs a nudge. GitHub is authoritative here..
 
 `[DISPUTED]` Ruflo claims 84.8% SWE-bench and 75% cost savings; an independent audit found the figure is produced by `simulate_benchmarks.py`, which adds `random.uniform(-0.05, 0.05)` to hardcoded base rates rather than running the suite, and Ruflo does not appear on the official SWE-bench leaderboard. Do not cite the number as a benchmark result; if mentioned at all, mark it as fabricated/synthetic.
 

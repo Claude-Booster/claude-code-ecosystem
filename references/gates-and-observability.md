@@ -1,5 +1,5 @@
 ---
-last_verified: 2026-09-22
+last_verified: 2026-10-09
 volatility: low
 verify_horizon_days: 7
 primary_sources:
@@ -53,7 +53,7 @@ Read the benchmark caveat before using these numbers: **most are vendor-run.**
 
 `[VENDOR]` Greptile's own July 2025 benchmark (50 real-world PRs, 5 repos): Greptile caught **82%** of bugs, Cursor Bugbot 58%, Copilot 54%, CodeRabbit 44%, Graphite 6%. The same benchmark logged ~11 false positives per run for Greptile vs ~2 for CodeRabbit.
 
-`[REPORTED]` Independent Signal65 testing tells a different story on precision: **Cursor Bugbot posted the highest precision in the field (~95.95%, only 3 false positives)** while finding ~23% fewer true positives than CodeRabbit.
+`[DISPUTED]` The Signal65 "Evaluating AI Code Review Tools" study (March 2026) is heavily CodeRabbit-branded/-promoted (the widely circulated infographic is published as "CodeRabbit — Evaluating AI Code Review Tools") with no independent-sponsorship disclosure, so it does not support an "independent" / `[REPORTED]` framing. The precision number for Cursor Bugbot (**95.95%**) checks out, but **CodeRabbit effectively tied it at 95.88%**, and the study's own conclusion crowns CodeRabbit as the overall winner — so "Cursor Bugbot posted the highest precision in the field" is a 0.07-point edge, not a differentiator.
 
 Both can be true — they measure recall and precision respectively. Translate for the user rather than quoting either as "best":
 
@@ -61,11 +61,11 @@ Both can be true — they measure recall and precision respectively. Translate f
 |---|---|---|---|
 | **CodeRabbit** | broadest coverage, lowest noise, most adopted; GitHub/GitLab/Bitbucket/Azure DevOps | middling depth | small teams wanting one tool |
 | **Greptile** | deepest bug-catching via full-codebase indexing | accept more false positives | growth-stage teams that can absorb noise |
-| **Cursor Bugbot** | highest precision, leanest | Cursor-native; `[VERIFIED]` moved to usage-based pricing ~$1–1.50/review June 2026 | teams already on Cursor |
+| **Cursor Bugbot** | highest precision, leanest | Cursor-native; `[VENDOR]` Usage-based pricing (~$1.00–1.50/run per Cursor's help center) was **announced May 11, 2026**, with existing customers migrating at their next renewal **on/after June 8, 2026** — so "June 2026" is the rollout, not the announcement. Source is Cursor's own help center, which supports `[VENDOR]`, not `[VERIFIED]` (no independent reproduction of the per-run cost). A June 2026 update also made Bugbot ~22% cheaper per run and added a `/review` command and effort levels. | teams already on Cursor |
 | **Sentry Seer** | strongest on high/critical severity | narrow | production-incident focus |
 | Claude `/review`, GitHub PR review action | in-loop, no extra vendor | not a substitute for a dedicated reviewer | everyone, as a first pass |
 
-`[VERIFIED]` Cursor acquired Graphite in December 2025.
+`[VERIFIED]` Confirmed: deal announced **December 19, 2025** (cash + equity, undisclosed terms; Graphite to continue as a standalone product). No change needed — listed only to record it was re-verified.
 
 `[REPORTED]` Consensus growth-stage setup: Greptile plus a bug-focused tool. Small teams: CodeRabbit alone.
 
@@ -75,7 +75,7 @@ Both can be true — they measure recall and precision respectively. Translate f
 
 Cite this when a user is scaling agent usage without scaling review.
 
-`[VERIFIED]` Anthropic's June 2026 research, "How Claude Code is used in practice" — ~400,000 sessions across 235,000 users, Oct 2025–Apr 2026:
+`[VERIFIED]` Anthropic's June 2026 research, **"Agentic coding and persistent returns to expertise"** (published June 16, 2026) — ~400,000 sessions across 235,000 users, Oct 2025–Apr 2026. (The underlying stats are confirmed: intermediate+ sessions reach verified success 28–33% of the time; novices reach it ~15%; novices abandon 19% of sessions vs 5–7% for everyone else.)
 
 - A session rated intermediate or above reaches **verified success only 28–33% of the time**
 - **Novices abandon 19% of troubled sessions** versus 5–7% for everyone else
