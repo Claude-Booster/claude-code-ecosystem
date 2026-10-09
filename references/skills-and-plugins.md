@@ -1,5 +1,5 @@
 ---
-last_verified: 2026-09-22
+last_verified: 2026-10-09
 volatility: medium
 verify_horizon_days: 7
 primary_sources:
@@ -69,13 +69,13 @@ Installed to `~/.claude/plugins/`. Toggle on and off without touching project co
 
 ## Marketplaces and notable plugins
 
-**Official** (`claude-plugins-official`, Anthropic-curated): `[REPORTED]` ~100 entries — roughly 33 Anthropic-built (LSP language servers, feature-dev, code-review, commit-commands, security-guidance, frontend-design) and ~68 partner-built (GitHub, Playwright, Supabase, Figma, Vercel, Linear, Sentry, Stripe, Firebase).
+**Official** (`claude-plugins-official`, Anthropic-curated): `[VENDOR]` The official web catalog lists **341 plugins** (claude.com/marketplace/plugins, "341 plugins" header, 2026-10-09). The Anthropic-built vs. partner-built split (~33/~68) is no longer published anywhere primary; Anthropic's docs now say the catalog "changes often, so this page doesn't list it." Anthropic's own named plugins still include commit-commands, code-review, feature-dev, security-guidance, and the language-server plugins.
 
 **Community marketplaces:** buildwithclaude.com, claudemarketplaces.com, aitmpl.com, Agensi. `[REPORTED]` third-party plugin count reached the thousands by mid-2026.
 
 **Standouts:**
 
-- **Frontend Design** — Anthropic's most-installed plugin, `[REPORTED]` ~277k installs mid-2026. Anchors UI output to design tokens and patterns so results don't read as generic. Relevant to anyone complaining that AI-generated interfaces look templated.
+- **Frontend Design** — Anthropic's most-installed plugin, `[DISPUTED]` Install figures now conflict across aggregators — ≥277k (Magier), ~829k (June 2026 analysis), and 1.1M+ (ClaudeLog) — with no primary count. Anthropic's own catalog page (claude.com/marketplace/plugins) shows **no install counts at all** as of 2026-10-09, so the number cannot be grounded. The "most-installed official-marketplace plugin" ranking is still consistently reported. Anchors UI output to design tokens and patterns so results don't read as generic. Relevant to anyone complaining that AI-generated interfaces look templated.
 - **pr-review-toolkit** — specialized review subagents
 - **security-guidance**
 - **LSP plugins** (pyright, etc.) — cheap, high-value; give the agent real symbol resolution
