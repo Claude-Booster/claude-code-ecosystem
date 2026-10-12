@@ -74,11 +74,11 @@ python3 scripts/check_refs.py
 
 `refresh.sh` never edits `references/` — it only emits review patches. Apply what you accept and **bump `last_verified`** in the file's front matter (forgetting that bump silently stops the loop), or run `python3 scripts/apply_patches.py` to apply them automatically.
 
-**On CI (automatic):** the [`reference-auto-refresh`](.github/workflows/reference-staleness.yml) workflow runs every Monday (05:00 UTC). It detects stale files, runs `refresh.sh`, applies the patches, and lands the result as an **auto-merge PR** that merges once the `verify` check passes.
+**On CI (automatic):** the [`reference-auto-refresh`](.github/workflows/reference-staleness.yml) workflow runs weekly, fired by an **external scheduler** at 13:00 Asia/Manila (see *Weekly trigger* below — GitHub's own `schedule:` cron is deliberately not used because it fires hours late). It detects stale files, runs `refresh.sh`, applies the patches, and lands the result as an **auto-merge PR** that merges once the `verify` check passes.
 
 ### Self-hosting the refresh loop (forks)
 
-The CI loop needs secrets and repo settings that cloning does **not** create. Without them the Monday run silently does nothing.
+The CI loop needs secrets, repo settings, and an external trigger that cloning does **not** create. Without them the weekly run silently does nothing (or fires hours late).
 
 **Secrets** — repo → Settings → Secrets and variables → Actions:
 
@@ -93,7 +93,23 @@ The CI loop needs secrets and repo settings that cloning does **not** create. Wi
 - **Allow auto-merge: ON** and **squash merging allowed** (Settings → General → Pull Requests) — the job uses `gh pr merge --squash --auto`.
 - **Branch protection** on the default branch **requiring the `verify` status check**, so auto-merge waits for it. The App-authored PR satisfies the check legitimately, so no bypass is needed even with `enforce_admins`.
 
-**Gotcha — registration:** a workflow's schedule only fires once GitHub Actions has *registered* it. A workflow that arrives via a bulk history push and has no `push:` trigger may never register. If `gh workflow list` doesn't show `reference-auto-refresh`, push a trivial edit to the workflow file on the default branch to force registration.
+**Weekly trigger (external scheduler):** GitHub's own `schedule:` cron fires hours late, so it is **not** used. The workflow triggers on `repository_dispatch` (type `refresh-weekly`) POSTed by an external scheduler at the exact time — set up a free job at [cron-job.org](https://console.cron-job.org):
+
+- **URL:** `https://api.github.com/repos/<owner>/<repo>/dispatches`
+- **Method:** `POST`
+- **Headers:** `Authorization: Bearer <PAT>` · `Accept: application/vnd.github+json`
+- **Body:** `{"event_type":"refresh-weekly"}`
+- **Schedule:** every **Monday 13:00**, timezone **Asia/Manila** (no DST — stable year-round)
+
+`<PAT>` is a GitHub token the `/dispatches` endpoint requires. It lives only in the scheduler's Authorization header, **not** as a repo secret — i.e. it's stored by a third party (cron-job.org), so prefer a **fine-grained token scoped to this one repo with an expiry** (permission **Contents: Read & write** is enough) over a classic **`repo`** token, which grants broad write across *all* your repos. Rotate it periodically. Test it with:
+
+```bash
+curl -X POST https://api.github.com/repos/<owner>/<repo>/dispatches \
+  -H "Authorization: Bearer $PAT" -H "Accept: application/vnd.github+json" \
+  -d '{"event_type":"refresh-weekly"}'
+```
+
+**Gotcha — registration:** `workflow_dispatch` / `repository_dispatch` only work once GitHub Actions has *registered* the workflow. A workflow that arrives via a bulk history push may not register; if `gh workflow list` doesn't show `reference-auto-refresh`, push a trivial edit to the workflow file on the default branch to force it.
 
 ## Security note
 
