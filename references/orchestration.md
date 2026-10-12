@@ -1,5 +1,5 @@
 ---
-last_verified: 2026-10-09
+last_verified: 2026-10-12
 volatility: medium
 verify_horizon_days: 7
 primary_sources:
@@ -8,7 +8,7 @@ primary_sources:
 
 # Orchestration
 
-Snapshot 2026-10-09.
+Snapshot 2026-10-12.
 
 ## Contents
 - The prior question

@@ -1,5 +1,5 @@
 ---
-last_verified: 2026-10-09
+last_verified: 2026-10-12
 volatility: medium
 verify_horizon_days: 7
 primary_sources:
@@ -9,7 +9,7 @@ primary_sources:
 
 # MCP Servers
 
-Snapshot 2026-10-09.
+Snapshot 2026-10-12.
 
 ## Contents
 - Selection rule
@@ -21,7 +21,7 @@ Snapshot 2026-10-09.
 
 ## Selection rule
 
-Every active MCP server injects its tool definitions into **every turn**. A heavy server can cost 18K+ tokens per turn `[REPORTED]`. This means:
+`[VERIFIED]` Claude Code turns tool search on by default. MCP tool definitions are held back until needed, and only tool names and server instructions load at session start. All tools still load upfront in these cases: This means:
 
 - Start with zero. Add one server, justify it, measure `/context`, repeat.
 - Prefer a **Skill** if the workflow doesn't need live external data. Skills load only on description match.
@@ -34,9 +34,9 @@ When a user complains about context exhaustion or degraded quality, check server
 
 | Server | Maintainer | What it does | Note |
 |---|---|---|---|
-| **Serena** | Oraios AI (MIT) | LSP-backed symbol-level code retrieval and editing; persistent project memory | Highest leverage on large codebases. `[REPORTED]` ~19–24k stars. Launch with a scoped tool set or it becomes the most common self-inflicted context wound. |
+| **Serena** | Oraios AI (GPL-3.0-or-later for the Serena application; its SolidLSP component stays MIT). The licence was split by component in a commit dated 2026-09-14, with a CLA added; the change is not retroactive. `[VERIFIED]` | LSP-backed symbol-level code retrieval and editing; persistent project memory | Highest leverage on large codebases. `[VERIFIED]` ~30k stars (GitHub repo page, 2026-10-12) `[VENDOR]` Serena's README says its basic file and shell tools (`search_for_pattern`, `replace_content`, `list_dir`, `find_file`, `read_file`, `execute_shell_command`) are "typically disabled by default" when it runs inside harnesses such as Claude Code. Tools can be scoped through YAML at the global, launch-command, project, context and mode levels. Scoping is still advised. |
 | **Context7** | Upstash | live, version-specific library documentation | Fixes the stale-API-surface failure mode |
-| **Playwright** | Microsoft (official) | browser automation | Enables the write-UI → drive-browser → verify loop |
+| `[VENDOR]` The project is still active and not archived. Its README now says "If you are using a coding agent, you might benefit from using the CLI+SKILLS instead", and keeps MCP for long-running or exploratory work that needs persistent browser state. |
 | **GitHub MCP** | GitHub | issues, PRs, repo ops | |
 | One DB server | varies | schema introspection, queries | **Use a read-only role.** A write-capable DSN is a footgun. |
 
@@ -46,7 +46,7 @@ That's the whole default set. Five servers is already a lot.
 
 Add only on a concrete need: Chrome DevTools MCP, Figma, Sentry, Linear, Jira/Atlassian, Notion, Supabase, Slack, Firecrawl, **Exa** (`[REPORTED]` most-used web-search server for coding agents).
 
-Official reference servers still maintained: Filesystem (directory-scoped, foundational), Fetch, Sequential Thinking, Memory, Git.
+`[VERIFIED]` The current reference servers are Everything (a test server), Fetch, Filesystem, Git, Memory, Sequential Thinking and Time. The archived set is AWS KB Retrieval, Brave Search, EverArt, GitHub, GitLab, Google Drive, Google Maps, PostgreSQL, Puppeteer, Redis, Sentry, Slack and SQLite. Brave Search was replaced by the official `@brave/brave-search-mcp-server`. Slack is now maintained by Zencoder.
 
 ## Archived / do not recommend
 
@@ -70,7 +70,7 @@ This is the part to take seriously. MCP's tool-description field is unsanitized 
 
 `[VERIFIED]` Hasan et al. 2025 (arXiv:2506.13538) surveyed 1,899 open-source MCP servers: **7.2% contained general security vulnerabilities, 5.5% exhibited MCP-specific tool-poisoning vectors.**
 
-`[VERIFIED]` CSA research note, July 2026: leading IDEs — Cursor, Claude Code, Gemini CLI, Copilot, Amazon Q — auto-execute project-defined MCP servers with developer-level OS privileges and no process isolation.
+`[DISPUTED]` The CSA note (2026-07-01) does name Claude Code among IDEs that auto-execute project-defined servers. Claude Code's own docs disagree for interactive use: Claude Code asks for approval before using `.mcp.json` servers, and approvals committed in an untrusted cloned repo are ignored. Project servers do load without a prompt in `claude -p` and Agent SDK runs. The process-isolation part of the CSA claim stands for the other tools named.
 
 **Controls that converge across NSA/CISA-adjacent guidance (June 2026) and Microsoft's state-of-MCP-security (2026):**
 

@@ -1,11 +1,11 @@
 ---
 name: claude-code-ecosystem
-description: Field reference for the Claude Code tooling ecosystem, snapshot 2026-10-09 — MCP servers, Agent Skills, plugins, spec-driven frameworks, worktree/parallel-agent managers, hooks and quality gates, OpenTelemetry observability, cost and rate-limit tooling, and competing agent CLIs. Use this whenever the user asks which tool to pair with Claude Code, asks to compare agentic coding tools, asks about MCP server selection or MCP security, asks how to structure CLAUDE.md / AGENTS.md / skills / hooks / subagents, asks about token spend or rate limits, or is scaffolding a new Claude Code setup. Consult it before recommending any named third-party Claude Code tool so the recommendation reflects verified 2026 status rather than stale training data — several widely-cited tools were archived, renamed, or shut down in 2026.
+description: Field reference for the Claude Code tooling ecosystem, snapshot 2026-10-12 — MCP servers, Agent Skills, plugins, spec-driven frameworks, worktree/parallel-agent managers, hooks and quality gates, OpenTelemetry observability, cost and rate-limit tooling, and competing agent CLIs. Use this whenever the user asks which tool to pair with Claude Code, asks to compare agentic coding tools, asks about MCP server selection or MCP security, asks how to structure CLAUDE.md / AGENTS.md / skills / hooks / subagents, asks about token spend or rate limits, or is scaffolding a new Claude Code setup. Consult it before recommending any named third-party Claude Code tool so the recommendation reflects verified 2026 status rather than stale training data — several widely-cited tools were archived, renamed, or shut down in 2026.
 ---
 
 # Claude Code Ecosystem Reference
 
-Snapshot: **2026-10-09**. This domain changes weekly. Treat every fact here as dated, and prefer a live check for anything marked `[VOLATILE]`.
+Snapshot: **2026-10-12**. This domain changes weekly. Treat every fact here as dated, and prefer a live check for anything marked `[VOLATILE]`.
 
 ## The default recommendation
 
