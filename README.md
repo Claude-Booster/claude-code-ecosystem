@@ -98,8 +98,10 @@ The CI loop needs secrets, repo settings, and an external trigger that cloning d
 - **URL:** `https://api.github.com/repos/<owner>/<repo>/dispatches`
 - **Method:** `POST`
 - **Headers:** `Authorization: Bearer <PAT>` · `Accept: application/vnd.github+json`
-- **Body:** `{"event_type":"refresh-weekly"}`
+- **Body:** `{"event_type":"refresh-weekly"}` — add `,"client_payload":{"force":true}` to refresh **all** files regardless of the staleness horizon
 - **Schedule:** every **Monday 13:00**, timezone **Asia/Manila** (no DST — stable year-round)
+
+**Force a full refresh on demand:** from the **Actions → reference-auto-refresh → Run workflow** button, set **force = true** (the `workflow_dispatch` input) to re-verify every file now, ignoring the 7-day horizon — useful for testing the pipeline or after a major ecosystem shift.
 
 `<PAT>` is a GitHub token the `/dispatches` endpoint requires. It lives only in the scheduler's Authorization header, **not** as a repo secret — i.e. it's stored by a third party (cron-job.org), so prefer a **fine-grained token scoped to this one repo with an expiry** (permission **Contents: Read & write** is enough) over a classic **`repo`** token, which grants broad write across *all* your repos. Rotate it periodically. Test it with:
 
