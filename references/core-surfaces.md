@@ -1,5 +1,5 @@
 ---
-last_verified: 2026-10-09
+last_verified: 2026-10-12
 volatility: high
 verify_horizon_days: 7
 primary_sources:
@@ -10,7 +10,7 @@ primary_sources:
 
 # Core Surfaces (First-Party)
 
-Snapshot 2026-10-09.
+Snapshot 2026-10-12.
 
 ## Contents
 - Extension primitives

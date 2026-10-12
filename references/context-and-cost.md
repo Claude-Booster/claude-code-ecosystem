@@ -1,5 +1,5 @@
 ---
-last_verified: 2026-10-09
+last_verified: 2026-10-12
 volatility: high
 verify_horizon_days: 7
 primary_sources:
@@ -9,7 +9,7 @@ primary_sources:
 
 # Context and Cost
 
-Snapshot 2026-10-09.
+Snapshot 2026-10-12.
 
 ## Contents
 - The four-layer context stack
@@ -38,7 +38,7 @@ Clean separation, each layer with one job:
 - **Initialize in subdirectories, not repo root**, for large monorepos — `/init` in the directory you're working in
 - Give each task the smallest useful context
 
-`[REPORTED]` Community rule of thumb has hardened to **≤200 lines**, with detail moved into `.claude/rules/*.md` scoped by path glob so rules load only for relevant files.
+`[VERIFIED]` Anthropic's cost docs now say "Aim to keep CLAUDE.md under 200 lines by including only essentials," and recommend moving workflow-specific instructions into skills that load on demand. `[REPORTED]` Moving detail into path-glob-scoped `.claude/rules/*.md` files is still community practice.
 
 `[VERIFIED]` Anthropic notes Claude tends to over-engineer. Adding an explicit "use the simplest possible approach" line to CLAUDE.md is standard mitigation.
 
@@ -56,7 +56,7 @@ AGENTS.md is governed by the Agentic AI Foundation (Linux Foundation, MIT). Reco
 
 | Tool | What it does | Note |
 |---|---|---|
-| **claude-mem** | auto-captures sessions, compresses, injects into future sessions | `[REPORTED]` #1 trending GitHub Feb 2026 |
+`[VERIFIED]` Still active and not archived (v13.x). The installer now asks for a browser sign-in and offers a 30-day trial of the hosted "CMEM Pro" observer. Cloud sync to cmem.ai is available. The README endorses a third-party crypto token ($CMEM). For a privacy-sensitive repo, warn the user that the default setup may send session memory off-machine, and point to the local observer (`--provider host`). `[DISPUTED]` CMEM Pro price: $30/mo in the v13.14.0 release note, $20/mo or $199/yr on a third-party listing.
 | **Serena** | symbol-level code memory plus persistent project memory across sessions | Also the top MCP pick — see `mcp-servers.md` |
 | Smart Connections | semantic layer over an Obsidian vault | For users who keep notes there |
 
@@ -66,12 +66,12 @@ Caution the user: auto-injecting memory is the fastest way to reintroduce the co
 
 | Tool | Type | Note |
 |---|---|---|
-| **ccusage** | free npm CLI (ryoppippi) | **The default recommendation.** Reads local JSONL — no account, no API key. `[REPORTED]` now tracks 18+ agent CLIs. |
+| `[VERIFIED]` The canonical repo is now `github.com/ccusage/ccusage`. The npm package is still `ccusage`, and the license is still "MIT © @ryoppippi". The project is active and the recommendation stands; only the URL changed. | **The default recommendation.** Reads local JSONL — no account, no API key. `[VERIFIED]` The README's "Supported Sources" table lists 18 tools, including Claude Code, Codex, OpenCode, Amp, Gemini CLI, Copilot CLI and Goose. |
 | **Claude-Code-Usage-Monitor** | Python TUI | burn-rate prediction |
 | **ccflare** | web dashboard | |
 | **CCSeva** | macOS menu bar | |
 | **ccstatusline** | status-line metrics | in-session visibility |
-| **Terse** | commercial | The one that *acts* — SIGSTOP/SIGTERM circuit breaker before the next API call |
+| **Terse** | commercial (macOS/Windows, trial then $4.99/mo) | `[VENDOR]` Says it pauses or ends the agent process at a spend ceiling before the next call. I found no independent check of this. |
 | claude-token-lens, cc-budget | | |
 
 Built-ins first: `/usage`, `/status`, `/cost`, `/context`. Most users asking about spend need `/context` habits, not a new tool.
@@ -93,6 +93,6 @@ Built-ins first: `/usage`, `/status`, `/cost`, `/context`. Most users asking abo
 1. Aggressive `/clear` between unrelated tasks
 2. Model routing — Haiku for fan-out, Sonnet daily, Opus for genuinely hard reasoning
 3. Prompt caching — watch cache-creation vs cache-read token split
-4. Minimize MCP servers (the context argument and the cost argument are the same argument)
+4. Minimize MCP servers. `[VERIFIED]` MCP tool definitions are now deferred by default, so only tool names and server instructions enter context until a tool is used. The per-server context cost is smaller than it was, but still not zero. CLI tools (`gh`, `aws`, `gcloud`) are still more context-efficient, and turning off unused servers through `/mcp` is still the guidance.
 5. Scope requests before sending rather than letting the agent explore
 6. Headless `claude -p` with `--allowedTools` for batch work
