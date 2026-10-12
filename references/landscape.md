@@ -8,7 +8,7 @@ primary_sources:
 
 # Competitive Landscape
 
-Snapshot 2026-09-19. `[VOLATILE]` — this table dates faster than anything else in the bundle.
+Snapshot 2026-10-09. `[VOLATILE]` — this table dates faster than anything else in the bundle.
 
 ## Contents
 - Status check before recommending

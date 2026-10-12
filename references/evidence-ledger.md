@@ -8,7 +8,7 @@ primary_sources:
 
 # Evidence Ledger
 
-Snapshot 2026-09-19. Read this before citing any number from this bundle.
+Snapshot 2026-10-09. Read this before citing any number from this bundle.
 
 ## Contents
 - Why this file exists

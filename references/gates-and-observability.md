@@ -9,7 +9,7 @@ primary_sources:
 
 # Gates and Observability
 
-Snapshot 2026-09-19.
+Snapshot 2026-10-09.
 
 ## Contents
 - Hooks as the enforcement layer
