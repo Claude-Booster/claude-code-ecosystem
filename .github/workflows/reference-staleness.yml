@@ -1,9 +1,12 @@
 name: reference-auto-refresh
 
-# Runs every Monday at 13:00 PHT (05:00 UTC) — weekly cadence matches the
-# 7-day verification horizon.
+# Fires weekly at 13:00 PHT (05:00 UTC), matching the 7-day verification horizon —
+# but via repository_dispatch from an EXTERNAL scheduler (e.g. cron-job.org), NOT
+# GitHub's own `schedule:` cron, which fires hours late and unpredictably. The
+# scheduler POSTs {"event_type":"refresh-weekly"} to the repo's /dispatches endpoint
+# at 13:00 Asia/Manila. See README "Self-hosting the refresh loop" for the recipe.
 #
-# On schedule / workflow_dispatch:
+# On repository_dispatch (refresh-weekly) / workflow_dispatch:
 #   1. detect stale files
 #   2. run refresh.sh → Claude re-verifies each stale file → patch in updates/
 #   3. apply_patches.py merges all verdicts automatically
@@ -27,8 +30,8 @@ name: reference-auto-refresh
 #   gate only — block merge if any file is stale or malformed.
 
 on:
-  schedule:
-    - cron: "0 5 * * 1"   # Monday 13:00 PHT (05:00 UTC)
+  repository_dispatch:
+    types: [refresh-weekly]   # POSTed by an external scheduler at 13:00 Asia/Manila
   workflow_dispatch:
   pull_request:
     paths:
@@ -51,7 +54,7 @@ jobs:
   auto-refresh:
     if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
-    # Serialize refresh runs so a manual dispatch can't race the Monday schedule.
+    # Serialize refresh runs so a manual dispatch can't race the weekly dispatch.
     concurrency:
       group: auto-refresh
       cancel-in-progress: false
@@ -143,7 +146,7 @@ jobs:
           fi
           TODAY=$(date -u +%F)
           # Per-run branch name so a manual dispatch can't collide with the
-          # same-day scheduled run on push / pr-create.
+          # same-day weekly dispatch on push / pr-create.
           BRANCH="auto-refresh/${TODAY}-${GITHUB_RUN_ID}"
           git switch -c "$BRANCH"
           git commit -m "chore: auto-refresh reference files ${TODAY}"
