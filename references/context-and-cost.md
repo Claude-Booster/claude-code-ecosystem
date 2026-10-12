@@ -9,7 +9,7 @@ primary_sources:
 
 # Context and Cost
 
-Snapshot 2026-09-19.
+Snapshot 2026-10-09.
 
 ## Contents
 - The four-layer context stack

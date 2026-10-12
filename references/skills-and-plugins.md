@@ -9,7 +9,7 @@ primary_sources:
 
 # Skills and Plugins
 
-Snapshot 2026-09-19.
+Snapshot 2026-10-09.
 
 ## Contents
 - Why Skills displaced MCP

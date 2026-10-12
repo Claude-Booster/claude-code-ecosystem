@@ -10,7 +10,7 @@ primary_sources:
 
 # Core Surfaces (First-Party)
 
-Snapshot 2026-09-19.
+Snapshot 2026-10-09.
 
 ## Contents
 - Extension primitives
